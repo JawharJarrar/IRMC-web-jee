@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="/WEB-INF/template/template.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+<ui:define name="content">
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=true&amp;key=AIzaSyCQ_P7nMCVJbUjV1FCWL-ZW5xfMJu9FzqY" />
+
+
+
+
+
+
+<h:form>
+                
+                
+        
+      
+          
+                
+   
+ <p:tabMenu activeIndex="#{param.i}">
+			<p:menuitem value="Articles" icon="ui-icon-star">
+				<f:param name="i" value="0" />
+			</p:menuitem>
+			<p:menuitem value="Videos" icon="ui-icon-search">
+				<f:param name="i" value="1" />
+			</p:menuitem>
+			<p:menuitem value="Libaries" icon="ui-icon-document">
+				<f:param name="i" value="2" />
+			</p:menuitem></p:tabMenu>
+			    
+        
+<h:commandButton action="#{eventBean.backToList()}" value="retour a la liste"   update="growl" styleClass="ui-priority-primary" />  
+      
+
+
+
+
+
+<p:gmap center="35.8424,10.627" zoom="15" type="HYBRID" style="width:100%;height:400px" model="#{eventBean.simpleModel}" >
+
+<p:ajax event="overlaySelect" listener="#{eventBean.onMarkerSelect()}" />
+ 
+        <p:gmapInfoWindow id="infoWindow">
+            <p:outputPanel >
+         <p:graphicImage   value="http://localhost:8081/IRMC/#{eventBean.marker.data}" height="150" />
+ 
+                    <br />
+                    <h:outputText value="#{infoWindowView.marker.title}" />
+ 
+            </p:outputPanel>
+        </p:gmapInfoWindow>
+    </p:gmap>
+                
+                
+                
+
+                                 
+</h:form>
+                            
+                            
+                            
+                            
+
+      
+      
+      
+      
+         
+    
+   
+    
+    
+  </ui:define>
+
+</ui:composition>

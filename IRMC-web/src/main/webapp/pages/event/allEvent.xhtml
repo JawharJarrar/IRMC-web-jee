@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="/WEB-INF/template/template.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+
+
+ 
+  <ui:define name="content">
+<h:outputStylesheet name="webjars/font-awesome/4.4.0/css/font-awesome.css"/>
+
+        
+          
+                  <h:form id="list">
+                  
+                             
+        <p:tabMenu activeIndex="#{param.i}">
+			<p:menuitem value="Articles" icon="ui-icon-star">
+				<f:param name="i" value="0" />
+			</p:menuitem>
+			<p:menuitem value="Videos" icon="ui-icon-search">
+				<f:param name="i" value="1" />
+			</p:menuitem>
+			<p:menuitem value="Libaries" icon="ui-icon-document">
+				<f:param name="i" value="2" />
+			</p:menuitem></p:tabMenu>
+			    <p:commandButton  id="nonAjax" actionListener="#{eventBean.showAll()}" ajax="false"   value="voir la cartography"  />
+			
+           
+<h1>Events Management</h1>
+ 
+     
+
+           <p:growl id="growl" showDetail="true" sticky="true"  />  
+
+          
+         
+          
+          
+      
+        
+			<p:selectOneMenu value="#{eventBean.type}" >
+						 			<f:selectItem  itemLabel="all"/>
+			
+			 			<f:selectItems value="#{data.languages}"/>
+			     <p:ajax event="change" update="list" listener="#{eventBean.search()}" />
+			 
+			
+        			</p:selectOneMenu>
+        
+          
+          
+          
+          <p:messages showDetail="true" autoUpdate="true" closable="true" id="list" />
+          
+
+           <p:dataTable value="#{eventBean.events}" var="event"
+           widgetVar="events" rowStyleClass="#{event.approved eq true ? 'background-color:blue': null}"
+						selectionMode="single"  selection="#{event}"
+              rowKey="#{event.idEvent}" paginator="true" rows="4">
+					  <f:facet name="header">
+              </f:facet>
+
+<p:column style="width:16px">
+				<p:rowToggler />
+			</p:column>
+
+					<p:column headerText="Id"  sortBy="#{event.approved}">
+        <h:outputText value="#{event.idEvent}" />
+    </p:column>
+    
+					<p:column headerText="Nom">
+        <h:outputText value="#{event.nom}" />
+    </p:column>
+    <p:column headerText="debut">
+        <h:outputText value="#{event.debut}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+        </h:outputText>
+    </p:column>
+     <p:column headerText="fin">
+        <h:outputText value="#{event.fin}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+        </h:outputText>
+        
+         </p:column>
+         
+        <p:column headerText="adresse">
+   
+   
+   
+              <h:outputText value="#{event.address}"/>
+   
+  </p:column>
+             
+          <p:column headerText="type">
+   
+   
+   
+              <h:outputText value="#{event.type}"/>
+   
+  </p:column>
+  
+      <p:column headerText="categorie">
+   
+   
+   
+              <h:outputText value="#{event.category.nom}"/>
+   
+  </p:column>
+             
+       <p:column filterBy="#{event.approved}" headerText="State" footerText="equals" filterMatchMode="equals">
+            <f:facet name="filter">
+                <p:selectOneButton onchange="PF('events').filter()">
+                    <f:converter converterId="javax.faces.Boolean" />
+                    <f:selectItem itemLabel="All items" itemValue="" />
+                      
+                    
+                    <f:selectItem itemLabel="On hold"  itemValue="false" />
+                    
+                    
+                </p:selectOneButton>
+            </f:facet>
+ <h:outputText value="onHold"  rendered="#{event.approved eq false}"/>
+              <h:outputText value="accepted"  rendered="#{event.approved eq true}"/>
+           </p:column>            
+         
+     
+     
+         
+         
+     
+        
+        
+ <p:column headerText="Action">
+               
+  <p:commandButton id="delete"
+                  actionListener="#{eventBean.remove(event)}"
+                  icon="fa fa-trash"  update="list"   ajax="true">
+                 
+                </p:commandButton>
+                
+                  <p:commandButton 
+                  action="#{eventBean.show(event.idEvent)}" icon="ui-icon ui-icon-search" >
+                 
+                </p:commandButton>
+                      <p:commandButton 
+                  action="#{eventBean.preUpdate(event.idEvent)}"
+                    icon="fa fa-edit" >
+                 
+                </p:commandButton>
+                
+                              </p:column>
+                
+        <p:rowExpansion>
+        	<h:form>
+
+					<div class="ui-g">
+						<div class="ui-g-8 ui-g-nopad">
+							<div class="ui-g-6">
+            <p:panelGrid  columns="2" columnClasses="label,value" style="width:800px">
+                <f:facet name="header">
+                </f:facet>
+ 
+ 	        <p:graphicImage  width="400" height="350" value="http://localhost:8081/IRMC/#{event.image}" />
+ 
+<iframe src="http://localhost:8081/IRMC/#{event.file}"
+                                    width="350" height="400"></iframe>
+                <h:outputText value="Description:" />
+                <h:outputText value="#{event.resume}" />
+ 
+                
+ 
+                 
+      <h:inputHidden  id="start" value="#{eventBean.eventToShow.debut}" >
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                </h:inputHidden>
+            </p:panelGrid></div></div></div>
+            </h:form>
+        </p:rowExpansion>
+      
+
+      	<p:commandButton ajax="true" action="#{eventBean.accept(event)}"  icon="ui-icon-circle-play" rendered="#{event.approved eq false}"  update="list"  value="accept"/>
+
+       
+
+               
+  
+					
+					
+				</p:dataTable>
+          </h:form>
+   
+
+  </ui:define>
+
+</ui:composition>

@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="/WEB-INF/template/template.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+<ui:define name="content">
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=true&amp;key=AIzaSyCQ_P7nMCVJbUjV1FCWL-ZW5xfMJu9FzqY" />
+
+
+   <script>
+    // <![CDATA[    
+                          
+    
+                    window.setInterval(countDown, 1000);
+                    function countDown() {
+                        var now = new Date();
+                       
+                    
+                        var debut= document.getElementById("start").value;
+                        //alert(debut);
+                        var future = new Date(debut);
+                        
+                        
+                        var timeLeft = future - now;
+                        var milli = timeLeft;
+                        var seconds = milli / 1000;
+                        var minutes = seconds / 60;
+                        var hours = minutes / 60;
+                        var days = hours / 24;
+                        var spareSeconds = seconds % 60;
+                        var spareMinutes = minutes % 60;
+                        var spareHours = hours % 24;
+                        var spareDays = days % 365;
+                        minutes = parseInt(minutes);
+                        hours = parseInt(hours);
+                        days = parseInt(days);
+                        spareSeconds = parseInt(spareSeconds);
+                        spareMinutes = parseInt(spareMinutes);
+                        spareHours = parseInt(spareHours);
+                        spareDays = parseInt(spareDays);
+                        days = padNumber(days);
+                        hours = padNumber(hours);
+                        minutes = padNumber(minutes);
+                        spareSeconds = padNumber(spareSeconds);
+                        spareMinutes = padNumber(spareMinutes);
+                        spareHours = padNumber(spareHours);
+                        spareDays = padNumber(spareDays);
+                        timeLeft = spareDays + ":" + spareHours + ":" + spareMinutes + ":" + spareSeconds;
+                        var mySpan = document.getElementById("clock");
+                        mySpan.innerHTML = timeLeft;
+                        if (milli <= 0) { //Time's run out! If all values go to zero
+                            mySpan.innerHTML = "00:00:00";
+                        }
+                    }
+                    function padNumber(number) {
+                        if (number < 10) {
+                            number = "0" + number;
+                        }
+                        return number;
+                    }
+                    // ]]>
+                    </script>		
+
+
+           
+        
+
+
+    <p:panel id="basic" header="#{eventBean.event.nom}"  style="margin-bottom:20px">
+    
+      <p:panelGrid columns="2" columnClasses="ui-grid-col-5,ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank">
+                   <p:panelGrid columns="1" columnClasses="ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank">
+        
+        <p:graphicImage  width="300" height="350" value="http://localhost:8081/IRMC/#{eventBean.eventToShow.image}" />
+         <p:outputLabel   value="starts in:" />
+        
+           <p:outputLabel id="clock"  style="font-size: 60px;"
+     />
+        
+        
+        </p:panelGrid>
+         <p:panelGrid columns="2"  layout="grid" styleClass="ui-panelgrid-blank">
+                         <p:outputLabel value="Titre:" />
+        
+            <h:outputText
+                value="#{eventBean.eventToShow.nom}"  />
+        
+              <p:outputLabel value="Description:" />
+        
+            <h:outputText
+                value="#{eventBean.eventToShow.resume}"  />
+                
+                
+              <p:outputLabel value="Date debut" />
+         <h:outputText    value="#{eventBean.eventToShow.debut}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+        </h:outputText>
+        
+              
+                 	
+
+        
+        
+         	 <p:outputLabel value="date fin:" />
+         <h:outputText  value="#{eventBean.eventToShow.fin}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+        </h:outputText>
+         	 
+        
+                
+                
+                                    <h:outputLabel value="categorie" />
+        
+            <h:outputText
+                value="#{eventBean.eventToShow.category.nom}"  />
+                
+                       
+                                    <h:outputLabel value="type" />
+        
+            <h:outputText
+                value="#{eventBean.eventToShow.type}"  />
+                
+                
+        
+        
+      <h:inputHidden  id="start" value="#{eventBean.eventToShow.debut}" >
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                </h:inputHidden>
+        
+          
+                
+    </p:panelGrid>
+      
+       </p:panelGrid>
+   
+        
+        
+        
+        
+        
+        
+        
+      
+
+
+<p:panelGrid columns="2" columnClasses="ui-grid-col-5,ui-grid-col-8" layout="grid" styleClass="ui-panelgrid-blank">
+
+<iframe src="http://localhost:8081/IRMC/#{eventBean.eventToShow.file}"
+                                    width="450" height="300"></iframe>
+
+
+<p:gmap center="35.8424,10.627" zoom="15" type="HYBRID" style="width:100%;height:400px" model="#{eventBean.simpleModel}" />
+                
+                
+                
+
+                                 
+
+                            
+</p:panelGrid>
+                            
+                            
+                            
+
+      
+      
+      
+      
+         
+    
+   
+    </p:panel>
+    
+    
+  </ui:define>
+
+</ui:composition>

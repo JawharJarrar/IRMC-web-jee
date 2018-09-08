@@ -1,0 +1,57 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="/WEB-INF/template/template.xhtml" xmlns:p="http://primefaces.org/ui">
+	<ui:define name="content">
+	<title>Add Event</title>
+	
+	
+	<h:form id="add">
+		<h:messages />
+			<h:panelGrid columns="2">
+				<h:outputLabel value="Titre" />
+				<h:inputText value="#{eventBean.event.nom}" id="nom" required="true" />
+				
+				<h:outputLabel value="Description" />
+				    <p:editor id="editor" widgetVar="editorWidget" value="#{eventBean.event.resume}" width="600" />
+				
+				
+				
+				
+							<h:outputLabel value="type" />
+			<h:selectOneMenu value="#{eventBean.event.type}" >
+			
+			<f:selectItem  itemLabel="Selectionner le role"  itemValue=""/>
+			 			<f:selectItems value="#{data.languages}"/>
+			 
+			</h:selectOneMenu>
+			
+			
+			
+<h:selectOneMenu value="#{eventBean.categ}">
+    <f:selectItems value="#{eventBean.categories}" var="cat"   itemLabel="#{cat.nom}"  itemValue="#{cat.idCategory}" />
+</h:selectOneMenu>
+			
+			
+			
+			
+			
+<p:outputLabel for="datetime" value="Datetime:" />
+        <p:calendar id="datetime" value="#{eventBean.event.datedebut}" pattern="MM/dd/yyyy HH:mm:ss" />
+ 
+<p:outputLabel for="datetime" value="Datetime:" />
+        <p:calendar id="datetime" value="#{eventBean.event.datefin}" pattern="MM/dd/yyyy HH:mm:ss" />
+        
+				<h:commandButton action="#{eventBean.ajouter()}" value="ajouter Projet" />
+
+			</h:panelGrid>
+			
+		</h:form>
+												  <div id="map-canvas"></div> 
+		
+		
+		</ui:define>
+		
+	</ui:composition>

@@ -1,0 +1,286 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="/WEB-INF/template/template.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+
+
+	<ui:define name="content">
+
+
+    <link href="/maps/documentation/javascript/examples/default.css" rel="stylesheet"></link>
+    
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&amp;sensor=true&amp;key=AIzaSyCQ_P7nMCVJbUjV1FCWL-ZW5xfMJu9FzqY
+"></script>
+
+    <style>
+        html, body {
+            height: 100%;
+            
+        }
+
+        #map-canvas, #map_canvas {
+            height: 50%;
+             width: 50%;
+            
+        }
+
+
+        }
+
+       
+
+        
+        }
+    </style>
+
+<script>
+    // <![CDATA[
+    
+        function initialize() {
+           var markers=[];
+            var markerMap=new google.maps.Marker();
+            //debut recuperation marker from object json
+            var infowindowMap=new google.maps.InfoWindow();
+            	    var xhr = new XMLHttpRequest();
+            	    console.log('test')
+            	    xhr.open('GET', 'http://localhost:18080/IRMC/rest/localisation', true);
+            	    xhr.responseType = 'json';
+            	    xhr.onload = function() {
+            	      var status = xhr.status;
+            	      if (status === 200) {
+
+var data=xhr.response;
+
+for (var i=0;i<data.length;i++){
+	//add marker
+	var myLatLng = {lat: Number(data[i].altitude), lng:Number(data[i].longitude)};
+	 markerMap = new google.maps.Marker({
+		    position: myLatLng,
+		    map: map,
+		    title: 'Hello World!'
+		  });
+	  console.log(data[i].address);
+	  markers.push(markerMap);
+	  //add content to info window
+	infowindowMap = new google.maps.InfoWindow({
+          content: data[i].altitude
+      });
+    //click marker
+	 google.maps.event.addListener(markers[i], 'click', function(content) {
+
+		      
+		        infowindowMap.open(map, this);
+		    
+		});
+	 
+
+}
+
+                 	      } else {
+            	        callback(status, xhr.response);
+            	      }
+            	    };
+            	    xhr.send();
+            	    google.maps.event.addListener(markerMap, 'click', function() {
+                        console.log('ss')
+                      });            	   
+          var mapOptions = {
+            center: new google.maps.LatLng(-33.8688, 151.2195),
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+          var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+          
+          var input = /** @type {HTMLInputElement} */(document.getElementById('searchTextField'));
+          var autocomplete = new google.maps.places.Autocomplete(input);
+		
+          autocomplete.bindTo('bounds', map);
+
+         var  infowindow = new google.maps.InfoWindow();
+        
+          var marker = new google.maps.Marker({
+            map: map
+          });
+
+          
+          google.maps.event.addListener(autocomplete, 'place_changed', function() {
+            infowindow.close();
+            console.log('gggg'+input.value);
+            var geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({'address': input.value}, function(results, status) {
+                console.log(status);
+                if (status === 'OK') {
+                    console.log(results)
+                   document.getElementById('lat').value=results[0].geometry.location.lat();
+                    document.getElementById('lng').value=results[0].geometry.location.lng();
+                    document.getElementById('adresse').value=results[0].formatted_address;
+                console.log(results[0].geometry.location.lat());
+                console.log(results[0].geometry.location.lng());
+console.log(results[0].formatted_address);
+               
+                } else {
+                  alert('Geocode was not successful for the following reason: ' + status);
+                }
+              });
+            
+            marker.setVisible(false);
+            input.className = '';
+            var place = autocomplete.getPlace();	
+            if (!place.geometry) {
+              // Inform the user that the place was not found and return.
+              input.className = 'notfound';
+              return;
+            }
+
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+              map.fitBounds(place.geometry.viewport);
+            } else {
+               
+              map.setCenter(place.geometry.location);
+              map.setZoom(17);  // Why 17? Because it looks good.
+            }
+            marker.setIcon(/** @type {google.maps.Icon} */({
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(35, 35)
+            }));
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+
+            var address = '';
+            if (place.address_components) {
+              address = [
+                (place.address_components[0] && place.address_components[0].short_name || ''),
+                (place.address_components[1] && place.address_components[1].short_name || ''),
+                (place.address_components[2] && place.address_components[2].short_name || '')
+              ].join(' ');
+            }
+
+            infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            infowindow.open(map, marker);
+          });
+
+          // Sets a listener on a radio button to change the filter type on Places
+          // Autocomplete.
+          function setupClickListener(id, types) {
+            var radioButton = document.getElementById(id);
+            google.maps.event.addDomListener(radioButton, 'click', function() {
+              autocomplete.setTypes(types);
+            });
+          }
+
+          setupClickListener('changetype-all', []);
+          setupClickListener('changetype-establishment', ['establishment']);
+          setupClickListener('changetype-geocode', ['geocode']);
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    // ]]>
+    </script>
+  
+    
+                
+        <p:tabMenu activeIndex="#{param.i}">
+			<p:menuitem value="Articles" icon="ui-icon-star">
+				<f:param name="i" value="0" />
+			</p:menuitem>
+			<p:menuitem value="Videos" icon="ui-icon-search">
+				<f:param name="i" value="1" />
+			</p:menuitem>
+			<p:menuitem value="Libaries" icon="ui-icon-document">
+				<f:param name="i" value="2" />
+			</p:menuitem>
+
+		</p:tabMenu>
+		<br></br>
+		<br></br>       
+                  
+                  
+                  
+        <h:form id="m" prependId="false" >
+                    
+          <p:growl id="growlNotifyNewReg" 
+                       showDetail="true" sticky="true" />         
+        <p:panelGrid columns="2"   update="growl" columnClasses="ui-grid-col-2,ui-grid-col-2" layout="grid" styleClass="ui-panelgrid-blank">
+        
+				
+				
+    
+    <h:outputLabel   value="Titre"  />
+				<p:inputText value="#{eventBean.eventToUpdate.nom}" id="nom" required="true" />
+				
+    
+    
+                    <h:outputLabel   value="Description"  style="float:left"/>
+            
+        <p:editor id="editor" widgetVar="editorWidget" value="#{eventBean.eventToUpdate.resume}" width="600" />
+    
+				
+			<h:outputLabel value="type" />
+				
+			<p:selectOneMenu value="#{eventBean.eventToUpdate.type}" >
+			
+			<f:selectItem  itemLabel="Selectionner le type"  itemValue=""/>
+			 			<f:selectItems value="#{data.languages}"/>
+			 
+			</p:selectOneMenu>
+			
+			
+<h:outputLabel value="category" />			
+<p:selectOneMenu  value="#{eventBean.categ}">
+    <f:selectItems value="#{eventBean.categories}" var="cat"   itemLabel="#{cat.nom}"  itemValue="#{cat.idCategory}" />
+</p:selectOneMenu>
+			
+			
+			
+			
+			
+	<p:outputLabel for="start" value="Date de debut :" />
+        <p:calendar id="start" value="#{eventBean.eventToUpdate.debut}" pattern="MM/dd/yyyy HH:mm:ss"   mindate="#{eventBean.dateMin}" >
+        
+					<p:ajax event="dateSelect" update="end" /></p:calendar>
+<p:outputLabel for="end" value="date de fin " />
+        <p:calendar id="end" value="#{eventBean.eventToUpdate.fin}"     mindate="#{eventBean.eventToUpdate.fin}" pattern="MM/dd/yyyy HH:mm:ss" />
+ 
+
+			
+			
+			
+			      <div style="width:50%; margin:auto;"> <p:inputText id="searchTextField" value="#{eventBean.eventToUpdate.address}" type="text" size="50" ></p:inputText></div>
+       <h:inputHidden  name="lat" id="lat" value="#{eventBean.eventToUpdate.altitude}" />
+ 	   <h:inputHidden  name="lng" id="lng" value="#{eventBean.eventToUpdate.longitude}" />
+ 	 	<h:inputHidden  name="adresse" id="adresse" value="#{eventBean.eventToUpdate.address}" />
+        
+									</p:panelGrid>
+				
+        <p:outputLabel  value="localisation " />
+
+
+														  <div id="map-canvas" style="width:height:250px;height:250px"></div> 
+		                        
+		                        
+		                        <br />
+   				<h:commandButton action="#{eventBean.Update()}" value="modifier" update="growl" />   />
+   
+
+
+			
+
+		</h:form>
+
+
+</ui:define>
+
+</ui:composition>
